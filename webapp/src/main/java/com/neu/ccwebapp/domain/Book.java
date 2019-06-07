@@ -3,7 +3,8 @@ package com.neu.ccwebapp.domain;
 import org.apache.logging.log4j.message.Message;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.validation.constraints.NotEmpty;
+import javax.persistence.Column;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,18 +18,20 @@ public class Book {
 
     @Id
     @GeneratedValue
+    @Column(length = 16)
     private UUID id;
 
-    @NotNull
+    @NotNull(message = "Cannot be null")
     private String title;
 
-    @NotNull()
+    @NotNull(message = "Cannot be null")
     private String author;
 
-    @NotNull
+    @NotNull(message = "Cannot be null")
     private String isbn;
 
-    @NotNull
+    @Min(value = 0, message = "The value must be positive")
+    @NotNull(message = "Cannot be null")
     private int quantity;
 
 

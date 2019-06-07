@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class BookServiceImpl implements BookService{
@@ -31,21 +32,17 @@ public class BookServiceImpl implements BookService{
     @Override
     public void updateBook(Book book)  {
 
-        Optional<Book> updatebook = bookRepository.findById(book.getId().toString());
-        if(updatebook.isEmpty())
-        {
-           // throw new Exception("Book with the following id not found : "+book.getId().toString());
-        }
+            bookRepository.save(book);
 
     }
 
     @Override
-    public Optional<Book> getBookById(String id) {
+    public Optional<Book> getBookById(UUID id) {
         return bookRepository.findById(id);
     }
 
     @Override
-    public void deleteBook(String id) {
+    public void deleteBook(UUID id) {
         bookRepository.deleteById(id);
     }
 }

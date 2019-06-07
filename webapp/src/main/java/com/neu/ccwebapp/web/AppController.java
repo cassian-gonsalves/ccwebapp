@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 public class AppController
@@ -55,14 +56,14 @@ public class AppController
     }
 
     @GetMapping("/book/{id}")
-    public Optional<Book> getBookById(@PathVariable String id)
+    public Optional<Book> getBookById(@PathVariable UUID id)
     {
         return bookService.getBookById(id);
 
     }
 
     @DeleteMapping("/book/{id}")
-    public void deleteBook(@PathVariable String id)
+    public void deleteBook(@PathVariable UUID id)
     {
         bookService.deleteBook(id);
 
