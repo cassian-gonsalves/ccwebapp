@@ -1,6 +1,7 @@
 package com.neu.ccwebapp.service;
 
 import com.neu.ccwebapp.domain.Book;
+import com.neu.ccwebapp.exceptions.BookNotFoundException;
 import com.neu.ccwebapp.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,24 +26,31 @@ public class BookServiceImpl implements BookService{
     }
 
     @Override
-    public Book createBook(Book book) {
+    public Book createBook(Book book)
+    {
         bookRepository.save(book);
-
         return book;
     }
 
     @Override
-    public void updateBook(Book book)  {
-
-            bookRepository.save(book);
-
-
-
+    public void updateBook(Book book) throws BookNotFoundException
+    {
+        Optional<Book> existingBook = bookRepository.findById(book.getId());
+        if(existingBook.isEmpty())
+        {
+            throw new BookNotFoundException("Could not find book with id : "+book.getId());
+        }
+        bookRepository.save(book);
     }
 
     @Override
-    public Optional<Book> getBookById(UUID id) {
-        return bookRepository.findById(id);
+    public Book getBookById(UUID id) throws BookNotFoundException {
+        Optional<Book> book = bookRepository.findById(id);
+        if(book.isEmpty())
+        {
+            throw new BookNotFoundException("Could not find book with id : "+id);
+        }
+        return book.get();
     }
 
     @Override

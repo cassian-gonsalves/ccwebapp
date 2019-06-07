@@ -1,41 +1,37 @@
 package com.neu.ccwebapp.domain;
 
-import org.apache.logging.log4j.message.Message;
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.Column;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Entity
 public class Book {
-
-
 
     @Id
     @GeneratedValue
     @Column(length = 16)
     private UUID id;
 
-    @NotNull(message = "Cannot be null")
+    @NotNull(message = "Title cannot be null")
+    @NotBlank
     private String title;
 
-    @NotNull(message = "Cannot be null")
+    @NotNull(message = "Author cannot be null")
+    @NotBlank
     private String author;
 
-    @NotNull(message = "Cannot be null")
+    @NotNull(message = "ISBN cannot be null")
+    @NotBlank
     private String isbn;
 
-    @Min(value = 0, message = "The value must be positive")
-    @NotNull(message = "Cannot be null")
+    @Min(value = 0, message = "The quantity must be positive")
+    @NotNull(message = "Quantity cannot be null")
     private int quantity;
-
-
-
 
     public UUID getId() {
         return id;
