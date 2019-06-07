@@ -40,6 +40,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         authentication.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 
+
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
