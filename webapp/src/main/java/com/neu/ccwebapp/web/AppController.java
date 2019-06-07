@@ -1,12 +1,15 @@
 package com.neu.ccwebapp.web;
 
+import com.neu.ccwebapp.domain.Book;
 import com.neu.ccwebapp.domain.User;
+import com.neu.ccwebapp.service.BookService;
 import com.neu.ccwebapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class AppController
@@ -17,10 +20,60 @@ public class AppController
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private BookService bookService;
+
     @PostMapping("/user/register")
     public void registerUser(@RequestBody User user)
     {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userService.registerUser(user);
     }
+
+
+
+    @GetMapping("/book")
+    public List<Book> getBook()
+    {
+        return bookService.getBook();
+
+    }
+
+
+    @PostMapping("/book")
+    public void createBook(@RequestBody Book book)
+    {
+        bookService.createBook(book);
+
+    }
+
+    @PutMapping("/book")
+    public void updateBook(@RequestBody Book book)
+    {
+        bookService.updateBook(book);
+
+    }
+
+    @GetMapping("/book/{id}")
+    public Optional<Book> getBookById(@PathVariable String id)
+    {
+        return bookService.getBookById(id);
+
+    }
+
+    @DeleteMapping("/book/{id}")
+    public void deleteBook(@PathVariable String id)
+    {
+        bookService.deleteBook(id);
+
+    }
+
+
+
+
+
+
+
+
+
 }
