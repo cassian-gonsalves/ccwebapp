@@ -9,7 +9,22 @@
 | Karun Kesavadas | 001475574 | kesavadas.k@husky.neu.edu |
 
 ## Technology Stack
+### Operating System
+* Linux (Ubuntu)
 
+### Programming Language
+* Java
+
+### Relational Database
+* MySQL
+
+### Backend Frameworks
+* Spring Boot Web
+* Spring Security
+* Spring Data JPA
+* Hibernate ORM
+* Hibernate Validator
+* Passay
 
 ## Build Instructions
 
