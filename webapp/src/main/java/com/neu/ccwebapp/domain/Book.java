@@ -1,9 +1,6 @@
 package com.neu.ccwebapp.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -32,6 +29,22 @@ public class Book {
     @Min(value = 0, message = "The quantity must be positive")
     @NotNull(message = "Quantity cannot be null")
     private int quantity;
+
+
+
+    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL)
+    private Image image;
+
+
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
+
 
     public UUID getId() {
         return id;
@@ -72,4 +85,6 @@ public class Book {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
+
+
 }

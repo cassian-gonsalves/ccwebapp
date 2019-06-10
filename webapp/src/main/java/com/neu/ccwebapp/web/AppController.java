@@ -2,10 +2,12 @@ package com.neu.ccwebapp.web;
 
 import com.neu.ccwebapp.domain.Book;
 import com.neu.ccwebapp.domain.CurrentTime;
+import com.neu.ccwebapp.domain.Image;
 import com.neu.ccwebapp.domain.User;
 import com.neu.ccwebapp.exceptions.BookNotFoundException;
 import com.neu.ccwebapp.exceptions.UserExistsException;
 import com.neu.ccwebapp.service.BookService;
+import com.neu.ccwebapp.service.ImageService;
 import com.neu.ccwebapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,9 @@ public class AppController {
 
     @Autowired
     private BookService bookService;
+
+    @Autowired
+    private ImageService imageService;
 
     @GetMapping("/")
     public CurrentTime getCurrentTime() {
@@ -85,4 +90,19 @@ public class AppController {
         bookService.deleteBook(id);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
+
+
+    @PostMapping("/book/{idBook}/image")
+    public void addBookImage(@Valid @PathVariable UUID idBook,@Valid @RequestBody Image image ){
+
+        try {
+            imageService.addBookImage(idBook, image);
+        }
+        catch (BookNotFoundException e)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
+        }
+
+    }
+
 }
