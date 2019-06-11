@@ -11,7 +11,6 @@ public class Image {
 
 
     @Id
-    @GeneratedValue
     @Column(length = 16)
     private UUID idBook;
 
@@ -20,18 +19,11 @@ public class Image {
     private String imageUrl;
 
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     private Book book;
 
 
-    public Image(){}
-
-
-    public Image(@NotNull(message = "Title cannot be null") @NotBlank String imageUrl, Book book) {
-        this.imageUrl = imageUrl;
-        this.book = book;
-    }
 
     public UUID getIdBook() {
         return idBook;

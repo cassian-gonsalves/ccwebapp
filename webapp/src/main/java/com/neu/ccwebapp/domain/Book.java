@@ -32,7 +32,11 @@ public class Book {
 
 
 
-    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL)
+
+
+
+    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY, optional = false)
     private Image image;
 
 

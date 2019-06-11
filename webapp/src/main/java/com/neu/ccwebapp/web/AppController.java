@@ -5,6 +5,7 @@ import com.neu.ccwebapp.domain.CurrentTime;
 import com.neu.ccwebapp.domain.Image;
 import com.neu.ccwebapp.domain.User;
 import com.neu.ccwebapp.exceptions.BookNotFoundException;
+import com.neu.ccwebapp.exceptions.ImageNotFoundException;
 import com.neu.ccwebapp.exceptions.UserExistsException;
 import com.neu.ccwebapp.service.BookService;
 import com.neu.ccwebapp.service.ImageService;
@@ -92,6 +93,7 @@ public class AppController {
     }
 
 
+
     @PostMapping("/book/{idBook}/image")
     public void addBookImage(@Valid @PathVariable UUID idBook,@Valid @RequestBody Image image ){
 
@@ -104,5 +106,55 @@ public class AppController {
         }
 
     }
+
+
+
+    @GetMapping("/book/{idBook}/image/{idImage}")
+    public Image getImageById(@Valid @PathVariable UUID idBook, @Valid @PathVariable UUID idImage){
+
+        try
+        {
+            return imageService.getImageById(idBook,idImage);
+        }
+        catch (ImageNotFoundException e)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
+        }
+
+
+    }
+
+
+    @PutMapping("/book/{idBook}/image/{idImage}")
+    public void updateImage(@Valid @PathVariable UUID idBook, @Valid @PathVariable UUID idImage,@Valid @RequestBody Image image){
+
+        try
+        {
+             imageService.updateImage(idBook,idImage,image);
+        }
+        catch (ImageNotFoundException e)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
+        }
+    }
+
+
+    @DeleteMapping("/book/{idBook}/image/{idImage}")
+    public void deleteImage(@Valid @PathVariable UUID idBook, @Valid @PathVariable UUID idImage){
+
+        try
+        {
+            imageService.deleteImage(idBook,idImage);
+        }
+        catch (ImageNotFoundException e)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
+        }
+
+
+    }
+
+
+
 
 }
