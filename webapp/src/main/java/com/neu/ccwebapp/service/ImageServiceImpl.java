@@ -73,6 +73,7 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public void deleteImage(UUID idBook, UUID idImage) throws ImageNotFoundException {
 
-
     }
+
+
 }

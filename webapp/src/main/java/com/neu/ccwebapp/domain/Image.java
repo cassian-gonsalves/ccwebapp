@@ -19,7 +19,7 @@ public class Image {
     private String imageUrl;
 
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @MapsId
     private Book book;
 
