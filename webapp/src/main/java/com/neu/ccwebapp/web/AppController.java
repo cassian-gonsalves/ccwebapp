@@ -4,9 +4,7 @@ import com.neu.ccwebapp.domain.Book;
 import com.neu.ccwebapp.domain.CurrentTime;
 import com.neu.ccwebapp.domain.Image;
 import com.neu.ccwebapp.domain.User;
-import com.neu.ccwebapp.exceptions.BookNotFoundException;
-import com.neu.ccwebapp.exceptions.ImageNotFoundException;
-import com.neu.ccwebapp.exceptions.UserExistsException;
+import com.neu.ccwebapp.exceptions.*;
 import com.neu.ccwebapp.service.BookService;
 import com.neu.ccwebapp.service.ImageService;
 import com.neu.ccwebapp.service.UserService;
@@ -14,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
@@ -88,73 +87,97 @@ public class AppController {
 
     @DeleteMapping("/book/{id}")
     public ResponseEntity deleteBook(@Valid @PathVariable UUID id) {
-        bookService.deleteBook(id);
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
-    }
-
-
-
-    @PostMapping("/book/{idBook}/image")
-    public void addBookImage(@Valid @PathVariable UUID idBook,@Valid @RequestBody Image image ){
-
-        try {
-            imageService.addBookImage(idBook, image);
+        try
+        {
+            bookService.deleteBook(id);
         }
         catch (BookNotFoundException e)
         {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }
-
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
 
 
-    @GetMapping("/book/{idBook}/image/{idImage}")
-    public Image getImageById(@Valid @PathVariable UUID idBook, @Valid @PathVariable UUID idImage){
-
+    @PostMapping("/book/{bookId}/image")
+    public Image addBookImage(@Valid @PathVariable UUID bookId, @RequestParam("file") MultipartFile file)
+    {
+        Image image;
         try
         {
-            return imageService.getImageById(idBook,idImage);
+            image = imageService.addBookImage(bookId, file);
+        }
+        catch (BookNotFoundException e)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
+        }
+        catch (ImageExistsException e)
+        {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage(),e);
+        }
+        catch (InvalidFileException e)
+        {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage(),e);
+        }
+        return image;
+    }
+
+    @GetMapping("/book/{bookId}/image/{imageId}")
+    public Image getImageById(@Valid @PathVariable UUID bookId, @Valid @PathVariable UUID imageId)
+    {
+        try
+        {
+            return imageService.getImageById(bookId,imageId);
         }
         catch (ImageNotFoundException e)
         {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }
-
-
-    }
-
-
-    @PutMapping("/book/{idBook}/image/{idImage}")
-    public void updateImage(@Valid @PathVariable UUID idBook, @Valid @PathVariable UUID idImage,@Valid @RequestBody Image image){
-
-        try
-        {
-             imageService.updateImage(idBook,idImage,image);
-        }
-        catch (ImageNotFoundException e)
+        catch (BookNotFoundException e)
         {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }
     }
 
 
-    @DeleteMapping("/book/{idBook}/image/{idImage}")
-    public void deleteImage(@Valid @PathVariable UUID idBook, @Valid @PathVariable UUID idImage){
-
+    @PutMapping("/book/{bookId}/image/{imageId}")
+    public ResponseEntity updateImage(@Valid @PathVariable UUID bookId, @Valid @PathVariable UUID imageId, @RequestParam("file") MultipartFile file)
+    {
         try
         {
-            imageService.deleteImage(idBook,idImage);
+            imageService.updateImage(bookId, imageId,file);
         }
         catch (ImageNotFoundException e)
         {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }
-
-
+        catch (BookNotFoundException e)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
+        }
+        catch (InvalidFileException e)
+        {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage(),e);
+        }
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-
-
-
+    @DeleteMapping("/book/{bookId}/image/{imageId}")
+    public ResponseEntity deleteImage(@Valid @PathVariable UUID bookId, @Valid @PathVariable UUID imageId)
+    {
+        try
+        {
+            imageService.deleteImage(bookId,imageId);
+        }
+        catch (ImageNotFoundException e)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
+        }
+        catch (BookNotFoundException e)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
+        }
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
 }

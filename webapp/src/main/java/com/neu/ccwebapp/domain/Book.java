@@ -7,8 +7,8 @@ import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Entity
-public class Book {
-
+public class Book
+{
     @Id
     @GeneratedValue
     @Column(length = 16)
@@ -30,10 +30,8 @@ public class Book {
     @NotNull(message = "Quantity cannot be null")
     private int quantity;
 
-
     @OneToOne(mappedBy = "book")
     private Image image;
-
 
     public Image getImage() {
         return image;
@@ -42,8 +40,6 @@ public class Book {
     public void setImage(Image image) {
         this.image = image;
     }
-
-
 
     public UUID getId() {
         return id;
@@ -84,6 +80,5 @@ public class Book {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
-
 
 }

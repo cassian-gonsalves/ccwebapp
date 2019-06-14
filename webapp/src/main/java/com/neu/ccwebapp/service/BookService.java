@@ -13,6 +13,6 @@ public interface BookService {
     Book createBook(Book book);
     void updateBook(Book book) throws BookNotFoundException;
     Book getBookById(UUID id) throws BookNotFoundException;
-    void deleteBook(UUID id);
+    void deleteBook(UUID id) throws BookNotFoundException;
 
 }
