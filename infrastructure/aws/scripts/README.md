@@ -1,17 +1,11 @@
-# csye6225-git-forking-workflow
-csye6225-aws-networking-setup Script
+#csye6225-aws-networking-setup using AWS CLI shell script
 
-This is a script file for creating a vpc with its resources like subnets, route tables, internet gateway)
+This is a script file for creating a vpc with its resources like subnets, route tables, internet gateway
 
-Install jq:
-sudo dnf install jq(comman-line json processor jq that can mangle the data format in json)
+Run the shell script to create VPC using command sh csye6225-aws-networking-setup.sh stack_name
 
-How to run csye6225-aws-networking-setup.sh
-./csye6225-aws-networking-setup.sh <vpc_name>
+Stack creation takes some time to create all resources in stack and shell will prompt with a success message
 
-csye6225-aws-networking-teardown Script
+Run the shell script to delete/terminate VPC using command sh csye6225-aws-networking-teardown.sh stack_name
 
-This is a script file for deleting a vpc along with the resources linked to it)
-
-How to run csye6225-aws-networking-teardown.sh
-./csye6225-aws-networking-teardown.sh <vpc_name>
+Stack resources will be deleted one-by-one and shell will prompt with success/failure message
