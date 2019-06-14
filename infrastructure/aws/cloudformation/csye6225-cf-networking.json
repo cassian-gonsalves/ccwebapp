@@ -43,7 +43,7 @@
         }
     },
     "Resources": {
-        "Csye6225VpcTest": {
+        "Csye6225Vpc": {
            "Type": "AWS::EC2::VPC",
            "Properties": {
               "CidrBlock": {
@@ -84,7 +84,7 @@
            "Type": "AWS::EC2::Subnet",
            "Properties": {
               "VpcId": {
-                 "Ref": "Csye6225VpcTest"
+                 "Ref": "Csye6225Vpc"
               },
               "MapPublicIpOnLaunch": true,
               "CidrBlock": {
@@ -115,7 +115,7 @@
            "Type": "AWS::EC2::Subnet",
            "Properties": {
               "VpcId": {
-                 "Ref": "Csye6225VpcTest"
+                 "Ref": "Csye6225Vpc"
               },
               "MapPublicIpOnLaunch": true,
               "CidrBlock": {
@@ -146,7 +146,7 @@
            "Type": "AWS::EC2::Subnet",
            "Properties": {
               "VpcId": {
-                 "Ref": "Csye6225VpcTest"
+                 "Ref": "Csye6225Vpc"
               },
               "MapPublicIpOnLaunch": true,
               "CidrBlock": {
@@ -199,7 +199,7 @@
            "DependsOn": "InternetGateway",
            "Properties": {
               "VpcId": {
-                 "Ref": "Csye6225VpcTest"
+                 "Ref": "Csye6225Vpc"
               },
               "InternetGatewayId": {
                  "Ref": "InternetGateway"
@@ -210,7 +210,7 @@
            "Type": "AWS::EC2::RouteTable",
            "Properties": {
               "VpcId": {
-                 "Ref": "Csye6225VpcTest"
+                 "Ref": "Csye6225Vpc"
               },
               "Tags": [
                  {

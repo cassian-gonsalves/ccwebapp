@@ -20,10 +20,10 @@ then
     status=$?
     if [ $status -eq 0 ];
     then
-    	echo "Stack could not be created"
+    	echo "Stack created successfully!"
         exit $status
     fi
-	echo "Stack created successfully!"
+	echo "Stack could not be created"
 else 
 	echo "Stack could not be created"
 fi
