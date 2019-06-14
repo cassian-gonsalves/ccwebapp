@@ -4,7 +4,6 @@ import com.neu.ccwebapp.domain.Book;
 import com.neu.ccwebapp.exceptions.BookNotFoundException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface BookService {
