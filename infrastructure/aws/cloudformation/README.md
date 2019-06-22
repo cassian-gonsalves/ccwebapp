@@ -1,6 +1,7 @@
-#csye6225-aws-cf-create-stack using AWS Cloud formation
+# csye6225-aws-cf-create-stack using AWS Cloud formation
 
-Run the shell script to create aws cloud formation stack using command:- sh csye6225-aws-cf-create-stack.sh stack_name
+Run the shell script to create aws cloud formation stack using command:- sh csye6225-aws-cf-create-stack.sh stack_name AWSREGION1 AWSREGION2 AWSREGION2
+Here Aws Region is the region in which you want to create your subnet
 
 Stack creation takes some time to create all resources in stack and shell will prompt with a success message
 
