@@ -16,7 +16,12 @@ public class Image
 
     @NotNull(message = "Title cannot be null")
     @NotBlank
+    @Column(length = 65535, columnDefinition="TEXT")
     private String url;
+
+    @NotNull
+    @JsonIgnore
+    private String fileName;
 
     @OneToOne
     @MapsId
@@ -45,5 +50,13 @@ public class Image
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }

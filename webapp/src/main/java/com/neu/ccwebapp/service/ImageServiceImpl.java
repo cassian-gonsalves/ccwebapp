@@ -9,6 +9,7 @@ import com.neu.ccwebapp.exceptions.InvalidFileException;
 import com.neu.ccwebapp.repository.BookRepository;
 import com.neu.ccwebapp.repository.ImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +29,9 @@ public class ImageServiceImpl implements ImageService {
     @Autowired
     StorageService storageService;
 
+    @Value("${spring.profiles.active:Unknown}")
+    private String activeProfile;
+
     @Override
     public Image addBookImage(UUID uuid, MultipartFile file) throws BookNotFoundException, ImageExistsException, InvalidFileException {
         String fileType = file.getContentType();
@@ -45,11 +49,8 @@ public class ImageServiceImpl implements ImageService {
         {
             throw new ImageExistsException("Image exists for book with id : "+uuid+". Update the book image using the PUT request.");
         }
-        String uri = storageService.store(file);
-        Image image = new Image();
+        Image image = storageService.store(file,uuid);
         image.setBook(book.get());
-        image.setImageId(uuid);
-        image.setUrl(uri);
         imageRepository.save(image);
         return image;
     }
@@ -68,7 +69,12 @@ public class ImageServiceImpl implements ImageService {
         {
             throw new ImageNotFoundException("The book (id : "+bookId+") does not have an image with id : "+imageId);
         }
-        return bookImage.get();
+        Image image = bookImage.get();
+        if(activeProfile.equals("cloud"))
+        {
+            image.setUrl(((AWSS3StorageService)storageService).generatePresignedURL(image.getFileName()));
+        }
+        return image;
     }
 
 
@@ -90,11 +96,9 @@ public class ImageServiceImpl implements ImageService {
         {
             throw new ImageNotFoundException("The book (id : "+bookId+") does not have an image with id : "+imageId);
         }
-        String uri = storageService.store(file);
-        Image image = new Image();
+        storageService.deleteImage(bookImage.get());
+        Image image = storageService.store(file,bookId);
         image.setBook(book.get());
-        image.setImageId(imageId);
-        image.setUrl(uri);
         imageRepository.save(image);
     }
 
@@ -111,6 +115,7 @@ public class ImageServiceImpl implements ImageService {
         {
             throw new ImageNotFoundException("The book (id : "+bookId+") does not have an image with id : "+imageId);
         }
+        storageService.deleteImage(bookImage.get());
         imageRepository.deleteById(imageId);
     }
 
