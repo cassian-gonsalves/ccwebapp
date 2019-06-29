@@ -25,8 +25,8 @@
 					},
 					{
 						"IpProtocol": "tcp",
-						"FromPort": "8080",
-						"ToPort": "8080",
+						"FromPort": "80",
+						"ToPort": "80",
 						"CidrIp": "0.0.0.0/0"
 					},
 					{
@@ -164,7 +164,7 @@
 				},
 				"DBName": "csye6225",
 				"Engine": "mysql",
-				"EngineVersion": "5.6.37",
+				"EngineVersion": "8.0.15",
 				"MasterUsername": "csye6225master",
 				"MasterUserPassword": "csye6225password",
 				"MultiAZ": "false",
