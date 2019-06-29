@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,8 +49,22 @@ public class AppController {
     }
 
     @GetMapping("/book")
-    public List<Book> getBook() {
-        return bookService.getBook();
+    public List<Book> getBook()
+    {
+        List<Book> books = new ArrayList<>();
+        try
+        {
+            books = bookService.getBooks();
+        }
+        catch (BookNotFoundException e)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage(),e);
+        }
+        catch (ImageNotFoundException e)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage(),e);
+        }
+        return books;
     }
 
     @PostMapping("/book")
@@ -82,6 +97,10 @@ public class AppController {
         catch (BookNotFoundException e)
         {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
+        }
+        catch (ImageNotFoundException e)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage(),e);
         }
     }
 

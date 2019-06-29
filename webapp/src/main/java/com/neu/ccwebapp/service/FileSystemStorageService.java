@@ -1,18 +1,24 @@
 package com.neu.ccwebapp.service;
 
+import com.neu.ccwebapp.domain.Image;
 import com.neu.ccwebapp.exceptions.FileStorageException;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletContext;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 
 @Service
+@Profile("!cloud")
 public class FileSystemStorageService implements StorageService
 {
     ServletContext context;
@@ -35,9 +41,9 @@ public class FileSystemStorageService implements StorageService
     }
 
     @Override
-    public String store(MultipartFile file)
+    public Image store(MultipartFile file, UUID uuid)
     {
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        String fileName = uuid.toString()+"_"+StringUtils.cleanPath(file.getOriginalFilename());
         Path targetLocation = this.fileStorageLocation.resolve(fileName);
         try
         {
@@ -47,6 +53,23 @@ public class FileSystemStorageService implements StorageService
         {
             throw new FileStorageException("Could not store file " + fileName + ". Please try again!", e);
         }
-        return targetLocation.toUri().toString();
+        Image image = new Image();
+        image.setImageId(uuid);
+        image.setFileName(fileName);
+        image.setUrl(targetLocation.toUri().toString());
+        return image;
+    }
+
+    @Override
+    public void deleteImage(Image image)
+    {
+        try
+        {
+            Files.deleteIfExists(Paths.get(new URI(image.getUrl())));
+        }
+        catch (Exception e)
+        {
+            throw new FileStorageException("Error while deleting file " + image.getFileName() + ". Please try again!", e);
+        }
     }
 }
