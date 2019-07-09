@@ -1,57 +1,38 @@
-set -e
+#!/bin/bash -xe
+if [ -z "$1" ]; then
+	echo "\e[31m\e[1m ERROR : STACK NAME WAS NOT PROVIDED!\e[0m"
+	exit 1
+else
+	STACK_NAME="$1-csye6225-iam"
+fi
+USER_NAME=$2
+if [ -z "$USER_NAME" ]; then
+	echo "\e[31m\e[1m ERROR : CIRCLECI USER'S USERNAME WAS NOT PROVIDED!\e[0m"
+	exit 1
+fi
+BUCKET_NAME=$3
+if [ -z "$BUCKET_NAME" ]; then
+	echo "\e[31m\e[1m ERROR : S3 BUCKET NAME FOR CODEDEPLOY WAS NOT PROVIDED!\e[0m"
+	exit 1
+fi
+APPLICATION_NAME=$4	
+if [ -z "$APPLICATION_NAME" ]; then
+	echo "\e[31m\e[1m ERROR : CODEDEPLOY APPLICATION NAME WAS NOT PROVIDED!\e[0m"
+	exit 1
+fi
 
-echo "Enter Stack Name:"
-read STACK_NAME
-StackName=$STACK_NAME-csye6225-iam
-
-
-echo "User List:"
-aws iam list-users|grep UserName|cut -d'"' -f4
-echo "Enter User Name For CircleCI:"
-read UserName
-#UserName="CircleCI"
-#echo $UserName
-echo "CreateDate:"
-CreateDate=$(aws iam get-user --user-name $UserName|grep CreateDate|cut -d'"' -f4)
-echo $CreateDate
-
-echo "Bucket List:"
-aws s3api list-buckets|grep \"Name\"|cut -d'"' -f4
-echo "Enter Bucket Name You Want To Use:"
-#read BucketName
-BucketName="code-deploy.csye6225-su19-palodkard.me"
-echo $BucketName
-echo "CreationDate:"
-CreationDate=$(aws s3api list-buckets|grep -A 1 $BucketName|cut -d'"' -f4)
-echo $CreationDate|cut -d' ' -f2
-
-echo "ApplicationName:"
-#read ApplicationName
-ApplicationName="csye6225-webapp"
-echo $ApplicationName
-
-aws cloudformation create-stack --stack-name $StackName --template-body file://csye6225-cf-iam.json --capabilities CAPABILITY_IAM --parameters \
-ParameterKey=UserName,ParameterValue=$UserName ParameterKey=ApplicationName,ParameterValue=$ApplicationName ParameterKey=BucketName,ParameterValue=$BucketName
-
-Status=$(aws cloudformation describe-stacks --stack-name $StackName|grep StackStatus|cut -d'"' -f4)
-
-echo "Please wait..."
-
-i=1
-sp="/-\|"
-echo -n ' '
-while [ "$Status" != "CREATE_COMPLETE" ]
-do
-    if [ "$Status" == "ROLLBACK_COMPLETE" ]
-    then
-    	printf "\b"
-        aws cloudformation describe-stacks --stack-name $StackName
-        exit 1
-    fi
-    Status=$(aws cloudformation describe-stacks --stack-name  $StackName 2>&1|grep StackStatus|cut -d'"' -f4)
-    printf "\b${sp:i++%${#sp}:1}"
-done
-
-printf "\b"
-echo "CREATE_COMPLETE"
+echo "\e[32m\e[1mCREATING IAM STACK!!\e[0m"
+stackCreation=$(aws cloudformation create-stack --stack-name $STACK_NAME --template-body file://csye6225-cf-iam.json --capabilities CAPABILITY_IAM --parameters \
+ParameterKey=UserName,ParameterValue=$USER_NAME ParameterKey=ApplicationName,ParameterValue=$APPLICATION_NAME ParameterKey=BucketName,ParameterValue=$BUCKET_NAME)
+if [ $? -eq 0 ]; then
+	stackCompletion=$(aws cloudformation wait stack-create-complete --stack-name $STACK_NAME)
+	if [ $? -eq 0 ]; then
+		echo "\e[32m\e[1mIAM STACK CREATION WAS SUCCESSFUL!!\e[0m"
+	else
+		echo "\e[31m\e[1m ERROR WHILE CREATING IAM STACK!\e[0m"
+	fi
+else
+	echo "\e[31m\e[1m ERROR WHILE CREATING IAM STACK!\e[0m"
+	echo $stackCreation
+fi
 
