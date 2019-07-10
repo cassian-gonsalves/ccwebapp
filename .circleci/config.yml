@@ -2,17 +2,30 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/openjdk:8-jdk
+      - image: circleci/python:3.6.1
+
     steps:
       - checkout
+      - run:
+          name: Installing Packages
+          command: |
+            sudo rm /etc/apt/sources.list
+            echo "deb http://archive.debian.org/debian/ jessie-backports main" | sudo tee -a /etc/apt/sources.list
+            echo "deb-src http://archive.debian.org/debian/ jessie-backports main" | sudo tee -a /etc/apt/sources.list
+            echo "Acquire::Check-Valid-Until false;" | sudo tee -a /etc/apt/apt.conf.d/10-nocheckvalid
+            echo 'Package: *\nPin: origin "archive.debian.org"\nPin-Priority: 500' | sudo tee -a /etc/apt/preferences.d/10-archive-pin
+            sudo apt update
+            sudo apt install wget zip unzip openjdk-11-jdk maven -y
+            sudo pip3 install awscli
       - run:
           name: Build Artifact
           command: |
             cd webapp
-            ./gradlew war
-            cd build/libs
-            ls -al
-            cd ../../..
+            ls -la
+            mvn clean package
+            sleep 5
+            ls -la target
+            cd
       - run:
           name: Zip Artifact
           command: |
@@ -35,7 +48,8 @@ jobs:
       - run:
           name: Upload Artifact to S3
           command: |
-            echo "Hello"
+            cd codedeploy_artifact
+            aws s3 cp csye6225-web-app-${CIRCLE_BUILD_NUM}.zip s3://${CODEDEPLOY_S3_BUCKET}   
       - run:
           name: Make CodeDeploy API call
           command: |

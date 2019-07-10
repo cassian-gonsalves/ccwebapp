@@ -23,7 +23,7 @@ fi
 
 echo "\e[32m\e[1mCREATING IAM STACK!!\e[0m"
 stackCreation=$(aws cloudformation create-stack --stack-name $STACK_NAME --template-body file://csye6225-cf-iam.json --capabilities CAPABILITY_IAM --parameters \
-ParameterKey=UserName,ParameterValue=$USER_NAME ParameterKey=ApplicationName,ParameterValue=$APPLICATION_NAME ParameterKey=BucketName,ParameterValue=$BUCKET_NAME)
+ParameterKey=CircleCIUser,ParameterValue=$USER_NAME ParameterKey=ApplicationName,ParameterValue=$APPLICATION_NAME ParameterKey=CodeDeployS3Bucket,ParameterValue=$BUCKET_NAME)
 if [ $? -eq 0 ]; then
 	stackCompletion=$(aws cloudformation wait stack-create-complete --stack-name $STACK_NAME)
 	if [ $? -eq 0 ]; then

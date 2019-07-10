@@ -1,12 +1,12 @@
 {
   "Parameters": {
-    "UserName": {
+    "CircleCIUser": {
       "Type": "String"
     },
     "ApplicationName": {
       "Type": "String"
     },
-    "BucketName": {
+    "CodeDeployS3Bucket": {
       "Type": "String"
     }
   },
@@ -116,7 +116,7 @@
         },
         "Users": [
           {
-            "Ref": "UserName"
+            "Ref": "CircleCIUser"
           }
         ]
       }
@@ -140,7 +140,7 @@
                     [
                       "arn:aws:s3:::",
                       {
-                        "Ref": "BucketName"
+                        "Ref": "CodeDeployS3Bucket"
                       },
                       "/*"
                     ]
@@ -152,7 +152,7 @@
         },
         "Users": [
           {
-            "Ref": "UserName"
+            "Ref": "CircleCIUser"
           }
         ]
       }
@@ -207,7 +207,7 @@
         },
         "Users": [
           {
-            "Ref": "UserName"
+            "Ref": "CircleCIUser"
           }
         ]
       }
