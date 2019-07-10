@@ -40,6 +40,11 @@ jobs:
             wget https://www-us.apache.org/dist/maven/maven-3/3.6.0/binaries/apache-maven-3.6.0-bin.tar.gz -P /tmp
             sudo tar xf /tmp/apache-maven-*.tar.gz -C /opt
             sudo ln -s /opt/apache-maven-3.6.0 /opt/maven
+      - run:
+          name: Build Artifact
+          command: |
+            cd webapp
+            ls -la
             export JAVA_HOME=/opt/jvm/openjdk-11.0.2
             export M2_HOME=/opt/maven
             export MAVEN_HOME=/opt/maven
@@ -48,12 +53,7 @@ jobs:
             echo "M2_HOME ====>$M2_HOME"            
             echo "MAVEN_HOME ====>$MAVEN_HOME"            
             echo "PATH ====>$PATH"                     
-            mvn -version  
-      - run:
-          name: Build Artifact
-          command: |
-            cd webapp
-            ls -la
+            mvn -version            
             mvn clean package
             sleep 5
             ls -la target
