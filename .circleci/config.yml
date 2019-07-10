@@ -46,6 +46,8 @@ jobs:
             sudo sh -c "echo $'export MAVEN_HOME=/opt/maven' >> /etc/profile.d/maven.sh"
             sudo sh -c "echo $'export PATH=${M2_HOME}/bin:${PATH}' >> /etc/profile.d/maven.sh"
             sudo chmod +x /etc/profile.d/maven.sh
+            sudo ls -la /etc/profile.d
+            sudo /etc/profile.d/maven.sh
             source /etc/profile.d/maven.sh
             mvn -version  
       - run:
