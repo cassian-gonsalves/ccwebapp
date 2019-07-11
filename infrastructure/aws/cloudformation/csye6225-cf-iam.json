@@ -1,4 +1,6 @@
 {
+  
+  "Description":"IAM Policy and roles for Circle ci : CI-CD Stack",
   "Parameters": {
     "CircleCIUser": {
       "Type": "String"
@@ -131,7 +133,8 @@
             {
               "Effect": "Allow",
               "Action": [
-                "s3:PutObject"
+                "s3:PutObject",
+                "s3:ListBucket"
               ],
               "Resource": [
                 {
@@ -205,6 +208,50 @@
             }
           ]
         },
+        "CodeDeployServiceRole":{
+          "Type":"AWS::IAM::Role",
+          "Properties":{
+             "AssumeRolePolicyDocument":{
+                "Version":"2012-10-17",
+                "Statement":[
+                   {
+                      "Sid":"",
+                      "Effect":"Allow",
+                      "Principal":{
+                         "Service":[
+                            "codedeploy.amazonaws.com"
+                         ]
+                      },
+                      "Action":"sts:AssumeRole"
+                   }
+                ]
+             },
+             "ManagedPolicyArns":[
+                "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
+             ],
+             "Path":"/",
+             "RoleName":"CodeDeployServiceRole"
+          }
+       }
+    },
+    "Outputs" : {
+      "CodeDeployServiceRoleArn" : {
+        "Description" : "Code Deploy Arn",
+        "Value" : {
+          "Fn::GetAtt" : ["CodeDeployServiceRole", "Arn"]
+        },
+        "Export" : {
+          "Name" : "CodeDeployServiceRoleOutput"
+        }
+      },
+      "CodeDeployEC2ServiceRoleArn" : {
+        "Description" : "Code Deploy EC2 Instance Profile",
+        "Value" : {"Ref" : "CodeDeployEC2InstanceProfile"},
+        "Export" : {
+          "Name" : "CodeDeployEC2InstanceProfile"
+        }
+      },
+ 
         "Users": [
           {
             "Ref": "CircleCIUser"
