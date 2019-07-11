@@ -22,8 +22,7 @@ if [ -z "$IMAGE_UPLOAD_BUCKET_NAME" ]; then
 fi
 APPLICATION_NAME=$5	
 if [ -z "$APPLICATION_NAME" ]; then
-	echo "\e[31m\e[1m ERROR : CODEDEPLOY APPLICATION NAME WAS NOT PROVIDED!\e[0m"
-	exit 1
+	APPLICATION_NAME="csye6225-webapp"
 fi
 
 echo "\e[32m\e[1mCREATING IAM STACK!!\e[0m"
