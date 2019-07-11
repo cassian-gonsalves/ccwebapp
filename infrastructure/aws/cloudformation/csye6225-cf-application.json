@@ -9,6 +9,21 @@
 		},
 		"amiId": {
 			"Type": "String"
+		},
+		"s3Bucket": {
+			"Type": "String"
+		},
+		"DBUsername": {
+			"Default": "csye6225master",
+			"Description": "The database admin account username",
+			"Type": "String",
+			"AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*"
+		},
+		"DBPassword": {
+			"Default": "csye6225password",
+			"Description": "The database admin account password",
+			"Type": "String",
+			"AllowedPattern": "[a-zA-Z0-9]*"
 		}
 	},
 	"Resources": {
@@ -98,20 +113,13 @@
 					"Ref": "keyPair"
 				},
 				"InstanceType": "t2.micro",
+				"IamInstanceProfile": {
+					"Fn::ImportValue": "CodeDeployEC2InstanceProfile"
+				},
 				"Tags": [
 					{
-						"Key": "Name",
-						"Value": {
-							"Fn::Join": [
-								"",
-								[
-									{
-										"Ref": "stackName"
-									},
-									"-csye6225-ec2"
-								]
-							]
-						}
+						"Key": "codeDeployKey",
+						"Value": "codeDeployValue"
 					}
 				],
 				"BlockDeviceMappings": [
@@ -128,8 +136,83 @@
 					{
 						"Ref": "webServerSecurityGroup"
 					}
-				]
-			}
+				],
+				"UserData": {
+					"Fn::Base64": {
+						"Fn::Join": [
+							"\n",
+							[
+								"#!/bin/bash -xe ",
+								"sudo su",
+								"echo '#!/bin/sh' >> /opt/tomcat/bin/setenv.sh",
+								{
+									"Fn::Join": [
+										"",
+										[
+											"echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.url=\"jdbc:mysql://",
+											{
+												"Fn::GetAtt": [
+													"RDSDB",
+													"Endpoint.Address"
+												]
+											},
+											":3306/csye6225\"\"'>> /opt/tomcat/bin/setenv.sh \n"
+										]
+									]
+								},
+								{
+									"Fn::Join": [
+										"",
+										[
+											"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=dev\"'>> /opt/tomcat/bin/setenv.sh\n"
+										]
+									]
+								},
+								{
+									"Fn::Join": [
+										"",
+										[
+											"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=",
+											{
+												"Ref": "DBUsername"
+											},
+											"\"' >> /opt/tomcat/bin/setenv.sh\n"
+										]
+									]
+								},
+								{
+									"Fn::Join": [
+										"",
+										[
+											"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=",
+											{
+												"Ref": "DBPassword"
+											},
+											"\"' >> /opt/tomcat/bin/setenv.sh\n"
+										]
+									]
+								},
+								{
+									"Fn::Join": [
+										"",
+										[
+											"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dbucket.name=",
+											{
+												"Ref": "s3Bucket"
+											},
+											"\"' >> /opt/tomcat/bin/setenv.sh\n"
+										]
+									]
+								},
+								"chmod +x /opt/tomcat/bin/setenv.sh",
+								"systemctl enable tomcat.service",
+								"systemctl start tomcat.service"
+							]
+						]
+					}
+				}
+			},
+			"DependsOn": "RDSDB"
 		},
 		"DynamoDBTable": {
 			"Type": "AWS::DynamoDB::Table",
@@ -174,6 +257,44 @@
 						"Ref": "dbSecurityGroup"
 					}
 				]
+			}
+		},
+		"CODEDEPLOYAPPLICATION": {
+			"Type": "AWS::CodeDeploy::Application",
+			"Properties": {
+				"ApplicationName": "csye6225-webapp",
+				"ComputePlatform": "Server"
+			}
+		},
+		"DEPLOYMENTGROUP": {
+			"Type": "AWS::CodeDeploy::DeploymentGroup",
+			"DependsOn": "CODEDEPLOYAPPLICATION",
+			"Properties": {
+				"ApplicationName": {
+					"Ref": "CODEDEPLOYAPPLICATION"
+				},
+				"DeploymentGroupName": "csye6225-webapp-deployment",
+				"DeploymentStyle": {
+					"DeploymentOption": "WITHOUT_TRAFFIC_CONTROL",
+					"DeploymentType": "IN_PLACE"
+				},
+				"AutoRollbackConfiguration": {
+					"Enabled": "true",
+					"Events": [
+						"DEPLOYMENT_FAILURE"
+					]
+				},
+				"DeploymentConfigName": "CodeDeployDefault.AllAtOnce",
+				"Ec2TagFilters": [
+					{
+						"Key": "codeDeployKey",
+						"Type": "KEY_AND_VALUE",
+						"Value": "codeDeployValue"
+					}
+				],
+				"ServiceRoleArn": {
+					"Fn::ImportValue": "CodeDeployServiceRoleOutput"
+				}
 			}
 		}
 	}
