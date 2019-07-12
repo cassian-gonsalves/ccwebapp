@@ -6,7 +6,7 @@ STACK_NAME="$1"
 if [ -z "$STACK_NAME" ]
 then
 	echo "\e[31m\e[1m ERROR : STACK NAME WAS NOT PROVIDED!\e[0m"
-	exit 0
+	exit 1
 fi
 CIDR_BLOCK="${2:-10.0.0.0/16}"
 
