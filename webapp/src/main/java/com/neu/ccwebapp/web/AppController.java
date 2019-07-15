@@ -48,7 +48,7 @@ public class AppController {
         }
     }
 
-    @GetMapping("/book")
+    @GetMapping("/cassian")
     public List<Book> getBook()
     {
         List<Book> books = new ArrayList<>();
