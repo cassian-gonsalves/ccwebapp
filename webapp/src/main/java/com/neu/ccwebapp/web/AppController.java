@@ -8,6 +8,8 @@ import com.neu.ccwebapp.exceptions.*;
 import com.neu.ccwebapp.service.BookService;
 import com.neu.ccwebapp.service.ImageService;
 import com.neu.ccwebapp.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +33,8 @@ public class AppController {
     @Autowired
     private ImageService imageService;
 
+    private static final Logger logger = LoggerFactory.getLogger(AppController.class);
+
     @GetMapping("/")
     public CurrentTime getCurrentTime() {
         return new CurrentTime();
@@ -44,6 +48,7 @@ public class AppController {
         }
         catch (UserExistsException e)
         {
+            logger.error("User already exists.",e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage(),e);
         }
     }
@@ -58,10 +63,12 @@ public class AppController {
         }
         catch (BookNotFoundException e)
         {
+            logger.error("Book not found.",e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage(),e);
         }
         catch (ImageNotFoundException e)
         {
+            logger.error("Image for the book was not found.",e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage(),e);
         }
         return books;
@@ -82,6 +89,7 @@ public class AppController {
         }
         catch (BookNotFoundException e)
         {
+            logger.error("Book not found.",e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage(),e);
         }
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -96,10 +104,12 @@ public class AppController {
         }
         catch (BookNotFoundException e)
         {
+            logger.error("Book not found.",e);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }
         catch (ImageNotFoundException e)
         {
+            logger.error("Image for the book was not found.",e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage(),e);
         }
     }
@@ -112,6 +122,7 @@ public class AppController {
         }
         catch (BookNotFoundException e)
         {
+            logger.error("Book not found.",e);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -129,14 +140,17 @@ public class AppController {
         }
         catch (BookNotFoundException e)
         {
+            logger.error("Book not found.",e);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }
         catch (ImageExistsException e)
         {
+            logger.error("Image for the book already exits.",e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage(),e);
         }
         catch (InvalidFileException e)
         {
+            logger.error("Invalid file type.",e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage(),e);
         }
         return image;
@@ -151,10 +165,12 @@ public class AppController {
         }
         catch (ImageNotFoundException e)
         {
+            logger.error("Image for the book was not found.",e);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }
         catch (BookNotFoundException e)
         {
+            logger.error("Book not found.",e);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }
     }
@@ -169,14 +185,17 @@ public class AppController {
         }
         catch (ImageNotFoundException e)
         {
+            logger.error("Image for the book was not found.",e);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }
         catch (BookNotFoundException e)
         {
+            logger.error("Book not found.",e);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }
         catch (InvalidFileException e)
         {
+            logger.error("Invalid file type.",e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage(),e);
         }
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -191,10 +210,12 @@ public class AppController {
         }
         catch (ImageNotFoundException e)
         {
+            logger.error("Image for the book was not found.",e);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }
         catch (BookNotFoundException e)
         {
+            logger.error("Book not found.",e);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }
         return new ResponseEntity(HttpStatus.NO_CONTENT);

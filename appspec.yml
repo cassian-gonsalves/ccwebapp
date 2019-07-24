@@ -4,6 +4,8 @@ os: linux
 files:             
   - source: webapp/target/ROOT.war
     destination: /opt/tomcat/webapps
+  - source: cloudwatch-config.json
+    destination: /opt
 
 hooks:
   AfterInstall:
