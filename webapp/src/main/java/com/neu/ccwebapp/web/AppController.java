@@ -8,6 +8,7 @@ import com.neu.ccwebapp.exceptions.*;
 import com.neu.ccwebapp.service.BookService;
 import com.neu.ccwebapp.service.ImageService;
 import com.neu.ccwebapp.service.UserService;
+import com.timgroup.statsd.StatsDClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,15 +34,20 @@ public class AppController {
     @Autowired
     private ImageService imageService;
 
+    @Autowired
+    private StatsDClient statsDClient;
+
     private static final Logger logger = LoggerFactory.getLogger(AppController.class);
 
     @GetMapping("/")
     public CurrentTime getCurrentTime() {
+        statsDClient.incrementCounter("api.current.time");
         return new CurrentTime();
     }
 
     @PostMapping("/user/register")
     public void registerUser(@Valid @RequestBody User user) {
+        statsDClient.incrementCounter("api.create.user");
         try
         {
             userService.registerUser(user);
@@ -56,6 +62,7 @@ public class AppController {
     @GetMapping("/book")
     public List<Book> getBook()
     {
+        statsDClient.incrementCounter("api.list.books");
         List<Book> books = new ArrayList<>();
         try
         {
@@ -77,12 +84,14 @@ public class AppController {
     @PostMapping("/book")
     public ResponseEntity<Book> createBook(@Valid @RequestBody Book book)
     {
+        statsDClient.incrementCounter("api.create.book");
         return ResponseEntity.status(HttpStatus.CREATED).body(bookService.createBook(book));
     }
 
     @PutMapping("/book")
     public ResponseEntity updateBook(@Valid @RequestBody Book book)
     {
+        statsDClient.incrementCounter("api.update.book");
         try
         {
             bookService.updateBook(book);
@@ -98,6 +107,7 @@ public class AppController {
     @GetMapping("/book/{id}")
     public Book getBookById(@Valid @PathVariable UUID id)
     {
+        statsDClient.incrementCounter("api.get.book");
         try
         {
             return bookService.getBookById(id);
@@ -115,7 +125,9 @@ public class AppController {
     }
 
     @DeleteMapping("/book/{id}")
-    public ResponseEntity deleteBook(@Valid @PathVariable UUID id) {
+    public ResponseEntity deleteBook(@Valid @PathVariable UUID id)
+    {
+        statsDClient.incrementCounter("api.delete.book");
         try
         {
             bookService.deleteBook(id);
@@ -133,6 +145,7 @@ public class AppController {
     @PostMapping("/book/{bookId}/image")
     public Image addBookImage(@Valid @PathVariable UUID bookId, @RequestParam("file") MultipartFile file)
     {
+        statsDClient.incrementCounter("api.add.image");
         Image image;
         try
         {
@@ -159,6 +172,7 @@ public class AppController {
     @GetMapping("/book/{bookId}/image/{imageId}")
     public Image getImageById(@Valid @PathVariable UUID bookId, @Valid @PathVariable UUID imageId)
     {
+        statsDClient.incrementCounter("api.get.image");
         try
         {
             return imageService.getImageById(bookId,imageId);
@@ -179,6 +193,7 @@ public class AppController {
     @PutMapping("/book/{bookId}/image/{imageId}")
     public ResponseEntity updateImage(@Valid @PathVariable UUID bookId, @Valid @PathVariable UUID imageId, @RequestParam("file") MultipartFile file)
     {
+        statsDClient.incrementCounter("api.update.image");
         try
         {
             imageService.updateImage(bookId, imageId,file);
@@ -204,6 +219,7 @@ public class AppController {
     @DeleteMapping("/book/{bookId}/image/{imageId}")
     public ResponseEntity deleteImage(@Valid @PathVariable UUID bookId, @Valid @PathVariable UUID imageId)
     {
+        statsDClient.incrementCounter("api.delete.image");
         try
         {
             imageService.deleteImage(bookId,imageId);
