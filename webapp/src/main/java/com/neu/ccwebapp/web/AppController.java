@@ -8,6 +8,9 @@ import com.neu.ccwebapp.exceptions.*;
 import com.neu.ccwebapp.service.BookService;
 import com.neu.ccwebapp.service.ImageService;
 import com.neu.ccwebapp.service.UserService;
+import com.timgroup.statsd.StatsDClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,19 +34,27 @@ public class AppController {
     @Autowired
     private ImageService imageService;
 
+    @Autowired
+    private StatsDClient statsDClient;
+
+    private static final Logger logger = LoggerFactory.getLogger(AppController.class);
+
     @GetMapping("/")
     public CurrentTime getCurrentTime() {
+        statsDClient.incrementCounter("api.current.time");
         return new CurrentTime();
     }
 
     @PostMapping("/user/register")
     public void registerUser(@Valid @RequestBody User user) {
+        statsDClient.incrementCounter("api.create.user");
         try
         {
             userService.registerUser(user);
         }
         catch (UserExistsException e)
         {
+            logger.error("User already exists.",e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage(),e);
         }
     }
@@ -51,6 +62,7 @@ public class AppController {
     @GetMapping("/book")
     public List<Book> getBook()
     {
+        statsDClient.incrementCounter("api.list.books");
         List<Book> books = new ArrayList<>();
         try
         {
@@ -58,10 +70,12 @@ public class AppController {
         }
         catch (BookNotFoundException e)
         {
+            logger.error("Book not found.",e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage(),e);
         }
         catch (ImageNotFoundException e)
         {
+            logger.error("Image for the book was not found.",e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage(),e);
         }
         return books;
@@ -70,18 +84,21 @@ public class AppController {
     @PostMapping("/book")
     public ResponseEntity<Book> createBook(@Valid @RequestBody Book book)
     {
+        statsDClient.incrementCounter("api.create.book");
         return ResponseEntity.status(HttpStatus.CREATED).body(bookService.createBook(book));
     }
 
     @PutMapping("/book")
     public ResponseEntity updateBook(@Valid @RequestBody Book book)
     {
+        statsDClient.incrementCounter("api.update.book");
         try
         {
             bookService.updateBook(book);
         }
         catch (BookNotFoundException e)
         {
+            logger.error("Book not found.",e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage(),e);
         }
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -90,28 +107,34 @@ public class AppController {
     @GetMapping("/book/{id}")
     public Book getBookById(@Valid @PathVariable UUID id)
     {
+        statsDClient.incrementCounter("api.get.book");
         try
         {
             return bookService.getBookById(id);
         }
         catch (BookNotFoundException e)
         {
+            logger.error("Book not found.",e);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }
         catch (ImageNotFoundException e)
         {
+            logger.error("Image for the book was not found.",e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage(),e);
         }
     }
 
     @DeleteMapping("/book/{id}")
-    public ResponseEntity deleteBook(@Valid @PathVariable UUID id) {
+    public ResponseEntity deleteBook(@Valid @PathVariable UUID id)
+    {
+        statsDClient.incrementCounter("api.delete.book");
         try
         {
             bookService.deleteBook(id);
         }
         catch (BookNotFoundException e)
         {
+            logger.error("Book not found.",e);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -122,6 +145,7 @@ public class AppController {
     @PostMapping("/book/{bookId}/image")
     public Image addBookImage(@Valid @PathVariable UUID bookId, @RequestParam("file") MultipartFile file)
     {
+        statsDClient.incrementCounter("api.add.image");
         Image image;
         try
         {
@@ -129,14 +153,17 @@ public class AppController {
         }
         catch (BookNotFoundException e)
         {
+            logger.error("Book not found.",e);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }
         catch (ImageExistsException e)
         {
+            logger.error("Image for the book already exits.",e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage(),e);
         }
         catch (InvalidFileException e)
         {
+            logger.error("Invalid file type.",e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage(),e);
         }
         return image;
@@ -145,16 +172,19 @@ public class AppController {
     @GetMapping("/book/{bookId}/image/{imageId}")
     public Image getImageById(@Valid @PathVariable UUID bookId, @Valid @PathVariable UUID imageId)
     {
+        statsDClient.incrementCounter("api.get.image");
         try
         {
             return imageService.getImageById(bookId,imageId);
         }
         catch (ImageNotFoundException e)
         {
+            logger.error("Image for the book was not found.",e);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }
         catch (BookNotFoundException e)
         {
+            logger.error("Book not found.",e);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }
     }
@@ -163,20 +193,24 @@ public class AppController {
     @PutMapping("/book/{bookId}/image/{imageId}")
     public ResponseEntity updateImage(@Valid @PathVariable UUID bookId, @Valid @PathVariable UUID imageId, @RequestParam("file") MultipartFile file)
     {
+        statsDClient.incrementCounter("api.update.image");
         try
         {
             imageService.updateImage(bookId, imageId,file);
         }
         catch (ImageNotFoundException e)
         {
+            logger.error("Image for the book was not found.",e);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }
         catch (BookNotFoundException e)
         {
+            logger.error("Book not found.",e);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }
         catch (InvalidFileException e)
         {
+            logger.error("Invalid file type.",e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage(),e);
         }
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -185,16 +219,19 @@ public class AppController {
     @DeleteMapping("/book/{bookId}/image/{imageId}")
     public ResponseEntity deleteImage(@Valid @PathVariable UUID bookId, @Valid @PathVariable UUID imageId)
     {
+        statsDClient.incrementCounter("api.delete.image");
         try
         {
             imageService.deleteImage(bookId,imageId);
         }
         catch (ImageNotFoundException e)
         {
+            logger.error("Image for the book was not found.",e);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }
         catch (BookNotFoundException e)
         {
+            logger.error("Book not found.",e);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }
         return new ResponseEntity(HttpStatus.NO_CONTENT);
