@@ -49,9 +49,9 @@
 
     <springProfile name="cloud">
         <appender name="FILE-ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <file>application.log</file>
+            <file>/opt/tomcat/logs/application.log</file>
             <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-                <fileNamePattern>logs/archived/application.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <fileNamePattern>/opt/tomcat/logs/archived/application.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
                 <maxFileSize>10MB</maxFileSize>
                 <totalSizeCap>2GB</totalSizeCap>
                 <maxHistory>30</maxHistory>
