@@ -12,6 +12,9 @@
       },
       "ImageUploadS3Bucket":{
          "Type":"String"
+      },
+      "EmailDomainName":{
+         "Type":"String"
       }
    },
    "Resources":{
@@ -63,7 +66,7 @@
                         "s3:Put*",
                         "s3:Delete*",
                         "s3:Get*",
-                        "s3:List*"                        
+                        "s3:List*"
                      ],
                      "Effect":"Allow",
                      "Resource":[
@@ -292,6 +295,46 @@
             ]
          }
       },
+      "CircleCIUpdateLambda":{
+         "Type":"AWS::IAM::Policy",
+         "Properties":{
+            "PolicyDocument":{
+               "Version":"2012-10-17",
+               "Statement":[
+                  {
+                     "Effect":"Allow",
+                     "Action":[
+                        "lambda:UpdateFunctionCode"
+                     ],
+                     "Resource":[
+                        {
+                           "Fn::Join":[
+                              "",
+                              [
+                                 "arn:aws:lambda:",
+                                 {
+                                    "Ref":"AWS::Region"
+                                 },
+                                 ":",
+                                 {
+                                    "Ref":"AWS::AccountId"
+                                 },
+                                 ":function:PasswordResetLambda"
+                              ]
+                           ]
+                        }
+                     ]
+                  }
+               ]
+            },
+            "PolicyName":"Circle-CI-Update-Lambda-Function",
+            "Users":[
+               {
+                  "Ref":"CircleCIUser"
+               }
+            ]
+         }
+      },
       "CodeDeployServiceRole":{
          "Type":"AWS::IAM::Role",
          "Properties":{
@@ -337,7 +380,43 @@
             },
             "ManagedPolicyArns":[
                "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
-            ],            
+            ],
+            "Policies":[
+               {
+                  "PolicyName":"SNSCreatePublishPolicy",
+                  "PolicyDocument":{
+                     "Version":"2012-10-17",
+                     "Statement":[
+                        {
+                           "Effect":"Allow",
+                           "Action":[
+                              "sns:Publish",
+                              "sns:CreateTopic",
+                              "sns:ConfirmSubscription"
+                           ],
+                           "Resource":[
+                              {
+                                 "Fn::Join":[
+                                    "",
+                                    [
+                                       "arn:aws:sns:",
+                                       {
+                                          "Ref":"AWS::Region"
+                                       },
+                                       ":",
+                                       {
+                                          "Ref":"AWS::AccountId"
+                                       },
+                                       ":password-reset"
+                                    ]
+                                 ]
+                              }
+                           ]
+                        }
+                     ]
+                  }
+               }
+            ],
             "Path":"/",
             "RoleName":"CodeDeployEC2ServiceRole"
          }
@@ -353,11 +432,112 @@
             ],
             "InstanceProfileName":"CodeDeployEC2InstanceProfile"
          }
+      },
+      "LambdaFunctionPolicy":{
+         "DependsOn":[
+            "LambdaFunctionRole"
+         ],
+         "Type":"AWS::IAM::Policy",
+         "Properties":{
+            "PolicyDocument":{
+               "Version":"2012-10-17",
+               "Statement":[
+                  {
+                     "Effect":"Allow",
+                     "Action":[
+                        "dynamodb:BatchGetItem",
+                        "dynamodb:GetItem",
+                        "dynamodb:Query",
+                        "dynamodb:BatchWriteItem",
+                        "dynamodb:PutItem",
+                        "dynamodb:UpdateItem"
+                     ],
+                     "Resource":[
+                        {
+                           "Fn::Join":[
+                              "",
+                              [
+                                 "arn:aws:dynamodb:",
+                                 {
+                                    "Ref":"AWS::Region"
+                                 },
+                                 ":",
+                                 {
+                                    "Ref":"AWS::AccountId"
+                                 },
+                                 ":table/csye6225"
+                              ]
+                           ]
+                        }
+                     ]
+                  },
+                  {
+                     "Effect":"Allow",
+                     "Action":[
+                        "SES:SendEmail",
+                        "SES:SendRawEmail"
+                     ],
+                     "Resource":[
+                        {
+                           "Fn::Join":[
+                              "",
+                              [
+                                 "arn:aws:ses:",
+                                 {
+                                    "Ref":"AWS::Region"
+                                 },
+                                 ":",
+                                 {
+                                    "Ref":"AWS::AccountId"
+                                 },
+                                 ":identity/",
+                                 {
+                                    "Ref":"EmailDomainName"
+                                 }
+                              ]
+                           ]
+                        }
+                     ]
+                  }
+               ]
+            },
+            "PolicyName":"LambdaFunctionPolicy",
+            "Roles":[
+               {
+                  "Ref":"LambdaFunctionRole"
+               }
+            ]
+         }
+      },
+      "LambdaFunctionRole":{
+         "Type":"AWS::IAM::Role",
+         "Properties":{
+            "AssumeRolePolicyDocument":{
+               "Version":"2012-10-17",
+               "Statement":[
+                  {
+                     "Sid":"",
+                     "Effect":"Allow",
+                     "Principal":{
+                        "Service":[
+                           "lambda.amazonaws.com"
+                        ]
+                     },
+                     "Action":"sts:AssumeRole"
+                  }
+               ]
+            },
+            "ManagedPolicyArns":[
+               "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+            ],
+            "Path":"/",
+            "RoleName":"LambdaFunctionRole"
+         }
       }
    },
    "Outputs":{
       "CodeDeployServiceRoleArn":{
-         "Description":"Code Deploy Arn",
+         "Description":"Code Deploy Service Role Arn",
          "Value":{
             "Fn::GetAtt":[
                "CodeDeployServiceRole",
@@ -375,6 +555,18 @@
          },
          "Export":{
             "Name":"CodeDeployEC2InstanceProfile"
+         }
+      },
+      "LambdaFunctionRoleArn":{
+         "Description":"Lambda Function Role",
+         "Value":{
+            "Fn::GetAtt":[
+               "LambdaFunctionRole",
+               "Arn"
+            ]
+         },
+         "Export":{
+            "Name":"LambdaFunctionRoleOutput"
          }
       }
    }
