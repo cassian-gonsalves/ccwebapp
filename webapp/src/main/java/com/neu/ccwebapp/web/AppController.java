@@ -234,6 +234,12 @@ public class AppController {
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
+    @GetMapping("/reset")
+    public String resetLink(@RequestParam String email,@RequestParam UUID token)
+    {
+        return "This is the reset link for email : "+email+" token : "+token;
+    }
+
     @PostMapping("/reset")
     public ResponseEntity resetPassword(@Valid @RequestBody ResetPassword user)
     {
