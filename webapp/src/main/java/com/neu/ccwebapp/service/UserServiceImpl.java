@@ -35,7 +35,6 @@ public class UserServiceImpl implements UserService, UserDetailsService
     private PasswordEncoder passwordEncoder;
 
     private final SnsClient snsClient = SnsClient.create();
-    private final CreateTopicResponse passwordResetTopic = snsClient.createTopic(CreateTopicRequest.builder().name("password-reset").build());
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -56,6 +55,7 @@ public class UserServiceImpl implements UserService, UserDetailsService
         {
             throw new UserNotFoundException(user.getUsername());
         }
+        CreateTopicResponse passwordResetTopic = snsClient.createTopic(CreateTopicRequest.builder().name("password-reset").build());
         PublishRequest publishRequest = PublishRequest.builder().message(user.getUsername()).topicArn(passwordResetTopic.topicArn()).build();
         PublishResponse publishResponse = snsClient.publish(publishRequest);
         logger.info("Message published to SNS : "+publishResponse.messageId());
