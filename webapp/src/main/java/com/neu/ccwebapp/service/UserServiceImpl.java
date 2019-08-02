@@ -1,8 +1,12 @@
 package com.neu.ccwebapp.service;
 
+import com.neu.ccwebapp.domain.ResetPassword;
 import com.neu.ccwebapp.domain.User;
 import com.neu.ccwebapp.exceptions.UserExistsException;
+import com.neu.ccwebapp.exceptions.UserNotFoundException;
 import com.neu.ccwebapp.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,6 +15,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.sns.SnsClient;
+import software.amazon.awssdk.services.sns.model.CreateTopicRequest;
+import software.amazon.awssdk.services.sns.model.CreateTopicResponse;
+import software.amazon.awssdk.services.sns.model.PublishRequest;
+import software.amazon.awssdk.services.sns.model.PublishResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +34,10 @@ public class UserServiceImpl implements UserService, UserDetailsService
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    private final SnsClient snsClient = SnsClient.create();
+
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+
     @Override
     public void registerUser(User user) throws UserExistsException {
         Optional<User> existingUser = userRepository.findById(user.getUsername());
@@ -36,6 +49,19 @@ public class UserServiceImpl implements UserService, UserDetailsService
     }
 
     @Override
+    public void resetPassword(ResetPassword user) throws UserNotFoundException {
+        Optional<User> existingUser = userRepository.findById(user.getUsername());
+        if(existingUser.isEmpty())
+        {
+            throw new UserNotFoundException(user.getUsername());
+        }
+        CreateTopicResponse passwordResetTopic = snsClient.createTopic(CreateTopicRequest.builder().name("password-reset").build());
+        PublishRequest publishRequest = PublishRequest.builder().message(user.getUsername()).topicArn(passwordResetTopic.topicArn()).build();
+        PublishResponse publishResponse = snsClient.publish(publishRequest);
+        logger.info("Message published to SNS : "+publishResponse.messageId());
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException
     {
         Optional<User> user = userRepository.findById(userName);
@@ -43,7 +69,7 @@ public class UserServiceImpl implements UserService, UserDetailsService
         {
             throw new UsernameNotFoundException("No user found with the username : "+userName);
         }
-        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         return new org.springframework.security.core.userdetails.User(user.get().getUsername(), user.get().getPassword(), authorities);
     }

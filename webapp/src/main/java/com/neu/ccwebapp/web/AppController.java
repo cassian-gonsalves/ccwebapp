@@ -1,9 +1,6 @@
 package com.neu.ccwebapp.web;
 
-import com.neu.ccwebapp.domain.Book;
-import com.neu.ccwebapp.domain.CurrentTime;
-import com.neu.ccwebapp.domain.Image;
-import com.neu.ccwebapp.domain.User;
+import com.neu.ccwebapp.domain.*;
 import com.neu.ccwebapp.exceptions.*;
 import com.neu.ccwebapp.service.BookService;
 import com.neu.ccwebapp.service.ImageService;
@@ -235,5 +232,27 @@ public class AppController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }
         return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/reset")
+    public String resetLink(@RequestParam String email,@RequestParam UUID token)
+    {
+        return "This is the reset link for email : "+email+" token : "+token;
+    }
+
+    @PostMapping("/reset")
+    public ResponseEntity resetPassword(@Valid @RequestBody ResetPassword user)
+    {
+        statsDClient.incrementCounter("api.reset.password");
+        try
+        {
+            userService.resetPassword(user);
+        }
+        catch (UserNotFoundException e)
+        {
+            logger.error("User does not exist.");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
+        }
+        return new ResponseEntity(HttpStatus.CREATED);
     }
 }
