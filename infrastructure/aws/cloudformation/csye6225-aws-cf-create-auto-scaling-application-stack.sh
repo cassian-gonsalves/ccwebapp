@@ -28,7 +28,7 @@ domain=${domain::-1}
 certificateArn=$(aws acm list-certificates --query CertificateSummaryList[0].CertificateArn --output text)
 _hostedZoneID=$(aws route53 list-hosted-zones --query HostedZones[0].Id --output text)
 hostedZoneID=${_hostedZoneID:12:${#_hostedZoneID}}
-stackCreation=$(aws cloudformation create-stack --stack-name $STACK_NAME --template-body file://csye6225-cf-application.json --parameters ParameterKey=stackName,ParameterValue=$STACK_NAME ParameterKey=keyPair,ParameterValue=$KEY_NAME ParameterKey=amiId,ParameterValue=$AMI_ID ParameterKey=s3Bucket,ParameterValue=$BucketName ParameterKey=ApplicationName,ParameterValue=$APPLICATION_NAME ParameterKey=domainName,ParameterValue=$domain ParameterKey=hostedZoneID,ParameterValue=$hostedZoneID ParameterKey=certificateARN,ParameterValue=$certificateArn)
+stackCreation=$(aws cloudformation create-stack --stack-name $STACK_NAME --template-body file://csye6225-cf-auto-scaling-application.json --parameters ParameterKey=stackName,ParameterValue=$STACK_NAME ParameterKey=keyPair,ParameterValue=$KEY_NAME ParameterKey=amiId,ParameterValue=$AMI_ID ParameterKey=s3Bucket,ParameterValue=$BucketName ParameterKey=ApplicationName,ParameterValue=$APPLICATION_NAME ParameterKey=domainName,ParameterValue=$domain ParameterKey=hostedZoneID,ParameterValue=$hostedZoneID ParameterKey=certificateARN,ParameterValue=$certificateArn)
 if [ $? -eq 0 ]; then
 	stackCompletion=$(aws cloudformation wait stack-create-complete --stack-name $STACK_NAME)
 	if [ $? -eq 0 ]; then

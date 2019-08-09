@@ -237,10 +237,10 @@
                      ]
                   ]
                }
-            }
-         },
-         "LaunchConfigurationName":"asg_launch_config",
-         "AssociatePublicIpAddress":true
+            },
+            "LaunchConfigurationName":"asg_launch_config",
+            "AssociatePublicIpAddress":true
+         }
       },
       "WebServerGroup":{
          "Type":"AWS::AutoScaling::AutoScalingGroup",
@@ -250,7 +250,7 @@
             "LaunchConfigurationName":{
                "Ref":"ASGLaunchConfiguration"
             },
-            "MaxSize":"10",
+            "MaxSize":"7",
             "MinSize":"3",
             "DesiredCapacity":"3",
             "HealthCheckType":"EC2",
@@ -284,7 +284,7 @@
             "AutoScalingGroupName":{
                "Ref":"WebServerGroup"
             },
-            "Cooldown":"30",
+            "Cooldown":"60",
             "ScalingAdjustment":"1"
          }
       },
@@ -298,7 +298,7 @@
             "Cooldown":"60",
             "ScalingAdjustment":"-1"
          }
-      },  
+      },
       "CPUAlarmHigh":{
          "Type":"AWS::CloudWatch::Alarm",
          "Properties":{
@@ -325,7 +325,7 @@
             "ComparisonOperator":"GreaterThanThreshold",
             "Unit":"Percent"
          }
-      },      
+      },
       "CPUAlarmLow":{
          "Type":"AWS::CloudWatch::Alarm",
          "Properties":{
@@ -352,7 +352,7 @@
             "ComparisonOperator":"LessThanThreshold",
             "Unit":"Percent"
          }
-      },  
+      },
       "ApplicationLoadBalancer":{
          "Type":"AWS::ElasticLoadBalancingV2::LoadBalancer",
          "Properties":{
@@ -453,7 +453,7 @@
             },
             "Type":"A"
          }
-      },                                                  
+      },
       "DynamoDBTable":{
          "Type":"AWS::DynamoDB::Table",
          "Properties":{
@@ -524,7 +524,11 @@
       },
       "CodeDeployDeploymentGroup":{
          "Type":"AWS::CodeDeploy::DeploymentGroup",
-         "DependsOn":["WebServerGroup","ALBTargetGroup","CodeDeployApplication"],
+         "DependsOn":[
+            "WebServerGroup",
+            "ALBTargetGroup",
+            "CodeDeployApplication"
+         ],
          "Properties":{
             "ApplicationName":{
                "Ref":"CodeDeployApplication"
@@ -560,7 +564,7 @@
                      }
                   }
                ]
-            }                                 
+            }
          }
       }
    },
@@ -574,5 +578,5 @@
             "Name":"csye6225-load-balancer"
          }
       }
-   }   
+   }
 }
