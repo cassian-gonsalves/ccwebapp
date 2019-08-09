@@ -65,18 +65,18 @@ Prerequisites for building and deploying your application locally
     **Content:** 
     ```json
     { "error" : "User already exits" }
+    ````
 
 
 All below endpoints are authenticated with basic authentication
 - Get all books 
-  * **Method:**` GET    `
+  * **Method:**` GET `
   * **URL:**`/book`
   * **Success Response:**
 
   * **Code:** `200 OK`
     **Content:** 
     ```json
-[	
   	{
     "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
     "title": "Computer Networks",
@@ -88,7 +88,6 @@ All below endpoints are authenticated with basic authentication
       "url": "https://s3-eu-central-1.amazonaws.com/BUCKET/FILE"
     	}
   	}
-]
     ```
  
   * **Error Response:**
@@ -203,7 +202,7 @@ All below endpoints are authenticated with basic authentication
   * **Method:**`DELETE`
   * **URL:** /book/:{id}`
   * **Success Response:**
-  
+
   * **Code:** `204 NO CONTENT`
  
   * **Error Response:**
@@ -329,11 +328,12 @@ All below endpoints are authenticated with basic authentication
 ````
 
 ## Running Tests
+```
 1. Download Jmeter and extract it
 2. Open terminal and go into the bin folder in the Jmeter folder
 3. Run the script by typing in the following command
 sh jmeter.sh -n -t LOCATION_OF_THE SCRIPT -JDomain=DOMAIN_NAME -JFilepath=PATH_TO_THE_IMAGE_FILE
-
+```
 
 ## CI/CD
 Implemented using CI/CD
