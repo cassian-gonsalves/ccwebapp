@@ -68,31 +68,274 @@ Prerequisites for building and deploying your application locally
 
 
 All below endpoints are authenticated with basic authentication
-- Get current time
-  * **Method:** `GET`
-`URL:**` /`
+- Get all books 
+  * **Method:**` GET    `
+  * **URL:**`/book`
   * **Success Response:**
 
   * **Code:** `200 OK`
+    **Content:** 
+    ```json
+[	
+  	{
+    "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+    "title": "Computer Networks",
+    "author": "Andrew S. Tanenbaum",
+    "isbn": "978-0132126953",
+    "quantity": 5,
+    "image": {
+      "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+      "url": "https://s3-eu-central-1.amazonaws.com/BUCKET/FILE"
+    	}
+  	}
+]
+    ```
  
   * **Error Response:**
 
   * **Code:** `401 UNAUTHORIZED`
     **Content:** 
     ```json
-    {"error" : "You are unauthorized to make this request." }
+    { "error" : "You are unauthorized to make this request." }
     ```
 
 
+- Create a new book
+  * **Method:**` POST`
+  * **URL:**` /book`
+  * **Success Response:**
 
+  * **Code:** `201 CREATED`
+    **Content:** 
+    ```json
+      {
+  "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+  "title": "Computer Networks",
+  "author": "Andrew S. Tanenbaum",
+  "isbn": "978-0132126953",
+  "quantity": 5,
+  "image": {
+    "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+    "url": "https://s3-eu-central-1.amazonaws.com/BUCKET/FILE"
+  }
+}
+    ```
+ 
+  * **Error Response:**
+
+  * **Code:** `400 BAD REQUEST`
+    **Content:** 
+    ```json
+    {"error" : "BAD REQUEST" }
+    ```
+
+     OR
+
+  * **Code:** `401 UNAUTHORIZED`
+    **Content:** 
+    ```json
+    { "error" : "You are unauthorized to make this request." }
+    ```
+
+
+- Update a new book
+  * **Method:**` POST`
+  * **URL:**` /book`
+  * **Success Response:**
+
+  * **Code:** `204 NO CONTENT`
+ 
+  * **Error Response:**
+
+  * **Code:** `400 BAD REQUEST`
+    **Content:** 
+    ```json
+    {"error" : "BAD REQUEST" }
+    ```
+
+     OR
+
+  * **Code:** `401 UNAUTHORIZED`
+    **Content:** 
+    ```json
+    { "error" : "You are unauthorized to make this request." }
+```
+
+- Get book by id
+  * **Method:**` GET`
+  * **URL:**` /book/{id}`
+  * **Success Response:**
+
+  * **Code:** `200 OK`
+    **Content:** 
+    ```json
+      {
+  "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+  "title": "Computer Networks",
+  "author": "Andrew S. Tanenbaum",
+  "isbn": "978-0132126953",
+  "quantity": 5,
+  "image": {
+    "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+    "url": "https://s3-eu-central-1.amazonaws.com/BUCKET/FILE"
+  }
+}
+    ```
+ 
+  * **Error Response:**
+
+  * **Code:** `404 NOT FOUND`
+    **Content:** 
+    ```json
+    {"error" : "Book doesn't exist" }
+    ```
+
+     OR
+
+  * **Code:**`401 UNAUTHORIZED`
+    **Content:** 
+    ```json
+    { "error" : "You are unauthorized to make this request." }
+    ```
+  
+
+- Delete book by id
+  * **Method:**`DELETE`
+  * **URL:** /book/:{id}`
+  * **Success Response:**
+  
+  * **Code:** `204 NO CONTENT`
+ 
+  * **Error Response:**
+
+  * **Code:** `400 BAD REQUEST`
+    **Content:** 
+    ```json
+    {"error" : "BAD REQUEST" }
+    ```
+
+    OR
+
+  * **Code:** `401 UNAUTHORIZED`
+    **Content:** 
+    ```json
+    { "error" : "You are unauthorized to make this request." }
+     ```
+
+
+- Add Image to book
+  * **Method:**` POST`
+  * **URL:**` /book/{id}/image`
+  * **Success Response:**
+
+  * **Code:** `200 OK`
+    **Content:** 
+    ```json
+      {
+  "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+  "url": "https://s3-eu-central-1.amazonaws.com/BUCKET/FILE"
+}
+    ```
+ 
+  * **Error Response:**
+
+  * **Code:**`401 UNAUTHORIZED`
+    **Content:** 
+    ```json
+    { "error" : "You are unauthorized to make this request." }
+    ```
+ 
+
+- Get Book Image
+  * **Method:**` GET`
+  * **URL:**` /book/{id}/image/{id}`
+  * **Success Response:**
+
+  * **Code:** `200 OK`
+    **Content:** 
+    ```json
+      {
+  "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+  "url": "https://s3-eu-central-1.amazonaws.com/BUCKET/FILE"
+}
+    ```
+ 
+  * **Error Response:**
+
+  * **Code:**`401 UNAUTHORIZED`
+    **Content:** 
+    ```json
+    { "error" : "You are unauthorized to make this request." }
+    ```
+
+- Update a book's image
+  * **Method:**` PUT`
+  * **URL:**` /book/{id}/image/{id}`
+  * **Success Response:**
+
+  * **Code:** `204 NO CONTENT`
+ 
+  * **Error Response:**
+
+  * **Code:** `401 UNAUTHORIZED`
+    **Content:** 
+    ```json
+    { "error" : "You are unauthorized to make this request." }
+```
+
+
+- Delete a book's image
+  * **Method:**` DELETE`
+  * **URL:**` /book/{id}/image/{id}`
+  * **Success Response:**
+
+  * **Code:** `204 NO CONTENT`
+ 
+  * **Error Response:**
+
+  * **Code:** `401 UNAUTHORIZED`
+    **Content:** 
+    ```json
+    { "error" : "You are unauthorized to make this request." }
+```
+
+
+
+- Password Reset
+  * **Method:**` POST`
+  * **URL:**` /reset`
+  * **Success Response:**
+
+  * **Code:** `204 NO CONTENT`
+ 
+  * **Error Response:**
+
+  * **Code:** `400 BAD REQUEST`
+    **Content:** 
+    ```json
+    { "error" : "BAD REQUEST" }
+```
 
 
 ## Deploy Instructions
-
+#### For deployment on Circle CI add the following environment variables 
+````
+1. APPLICATION_NAME
+2. AWS_ACCESS_KEY_ID
+3. AWS_DEFAULT_REGION
+4. AWS_REGION
+5. AWS_SECRET_ACCESS_KEY
+6. CODEDEPLOY_S3_BUCKET
+````
 
 ## Running Tests
+1. Download Jmeter and extract it
+2. Open terminal and go into the bin folder in the Jmeter folder
+3. Run the script by typing in the following command
+sh jmeter.sh -n -t LOCATION_OF_THE SCRIPT -JDomain=DOMAIN_NAME -JFilepath=PATH_TO_THE_IMAGE_FILE
 
 
 ## CI/CD
+Implemented using CI/CD
 
 
