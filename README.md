@@ -107,17 +107,17 @@ All below endpoints are authenticated with basic authentication
   * **Code:** `201 CREATED`
     **Content:** 
     ```json
-      {
-  "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
-  "title": "Computer Networks",
-  "author": "Andrew S. Tanenbaum",
-  "isbn": "978-0132126953",
-  "quantity": 5,
-  "image": {
+  	{
     "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
-    "url": "https://s3-eu-central-1.amazonaws.com/BUCKET/FILE"
-  }
-}
+    "title": "Computer Networks",
+    "author": "Andrew S. Tanenbaum",
+    "isbn": "978-0132126953",
+    "quantity": 5,
+    "image": {
+      "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+      "url": "https://s3-eu-central-1.amazonaws.com/BUCKET/FILE"
+    	}
+  	}
     ```
  
   * **Error Response:**
@@ -157,8 +157,9 @@ All below endpoints are authenticated with basic authentication
   * **Code:** `401 UNAUTHORIZED`
     **Content:** 
     ```json
-    { "error" : "You are unauthorized to make this request." }
-```
+    ```json
+    {"error" : "You are unauthorized to make this request." }
+    ```
 
 - Get book by id
   * **Method:**` GET`
@@ -168,18 +169,19 @@ All below endpoints are authenticated with basic authentication
   * **Code:** `200 OK`
     **Content:** 
     ```json
-      {
-  "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
-  "title": "Computer Networks",
-  "author": "Andrew S. Tanenbaum",
-  "isbn": "978-0132126953",
-  "quantity": 5,
-  "image": {
+  	{
     "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
-    "url": "https://s3-eu-central-1.amazonaws.com/BUCKET/FILE"
-  }
-}
+    "title": "Computer Networks",
+    "author": "Andrew S. Tanenbaum",
+    "isbn": "978-0132126953",
+    "quantity": 5,
+    "image": {
+      "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+      "url": "https://s3-eu-central-1.amazonaws.com/BUCKET/FILE"
+    	}
+  	}
     ```
+
  
   * **Error Response:**
 
@@ -230,10 +232,10 @@ All below endpoints are authenticated with basic authentication
   * **Code:** `200 OK`
     **Content:** 
     ```json
-      {
-  "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
-  "url": "https://s3-eu-central-1.amazonaws.com/BUCKET/FILE"
-}
+    {
+  		"id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+ 		"url": "https://s3-eu-central-1.amazonaws.com/BUCKET/FILE"
+	}
     ```
  
   * **Error Response:**
@@ -253,10 +255,10 @@ All below endpoints are authenticated with basic authentication
   * **Code:** `200 OK`
     **Content:** 
     ```json
-      {
-  "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
-  "url": "https://s3-eu-central-1.amazonaws.com/BUCKET/FILE"
-}
+    {
+  		"id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+  		"url": "https://s3-eu-central-1.amazonaws.com/BUCKET/FILE"
+	}
     ```
  
   * **Error Response:**
