@@ -282,7 +282,7 @@ All below endpoints are authenticated with basic authentication
     **Content:** 
     ```json
     { "error" : "You are unauthorized to make this request." }
-```
+    ```
 
 
 - Delete a book's image
@@ -298,8 +298,7 @@ All below endpoints are authenticated with basic authentication
     **Content:** 
     ```json
     { "error" : "You are unauthorized to make this request." }
-```
-
+    ```
 
 
 - Password Reset
@@ -314,8 +313,8 @@ All below endpoints are authenticated with basic authentication
   * **Code:** `400 BAD REQUEST`
     **Content:** 
     ```json
-    { "error" : "BAD REQUEST" }
-```
+    { "error" : "Bad request." }
+    ```
 
 
 ## Deploy Instructions
